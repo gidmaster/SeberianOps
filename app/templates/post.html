@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post.title }}</title>
+</head>
+</head>
+<body>
+    <a href="/">← Back</a>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.date }}</p>
+    <div>
+        {{ post.content_html | safe }}
+    </div>
+</body>
+</html>
