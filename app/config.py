@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     app_port: int = 8000
     cache_ttl_dev: int = 10
     cache_ttl_prod: int = 3600
+    admin_token: str = "changeme"
 
     @property
     def cache_ttl(self) -> int:
