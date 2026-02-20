@@ -3,7 +3,7 @@ import time
 import yaml
 import markdown2
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from app.config import settings
 
 POSTS_DIR = "content/posts"
@@ -29,6 +29,17 @@ def invalidate_cache() -> None:
     _cache = []
     _cache_ts = 0.0
 
+def _parse_date(value) -> date:
+    if isinstance(value, date):
+        return value
+    value = str(value)
+    for fmt in ("%d.%m.%Y", "%Y-%m-%d", "%d/%m/%Y"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError:
+            continue
+    raise ValueError(f"Cannot parse date: {value}")
+
 def _parse_post(filepath: str) -> Post:
     with open(filepath, "r", encoding="utf-8") as f:
         raw = f.read()
@@ -41,7 +52,7 @@ def _parse_post(filepath: str) -> Post:
 
     return Post(
         title=meta["title"],
-        date=meta["date"],
+        date=_parse_date(meta["date"]),
         slug=meta["slug"],
         summary=meta.get("summary", ""),
         tags=meta.get("tags", []),
