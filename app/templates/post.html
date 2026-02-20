@@ -3,9 +3,9 @@
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-<a href="/">← Back</a>
+<a href="/" class="back-link">← cd ..</a>
 <h1>{{ post.title }}</h1>
-<p>{{ post.date }}</p>
+<div class="post-meta">{{ post.date }}</div>
 <div class="post-content">
     {{ post.content_html | safe }}
 </div>

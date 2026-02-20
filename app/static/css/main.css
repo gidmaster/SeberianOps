@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Bitter:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* ── Variables ─────────────────────────────────────────── */
+:root {
+    --bg:        #0f1117;
+    --bg-card:   #161b27;
+    --border:    #232b3e;
+    --accent:    #00d97e;
+    --accent-dim:#00d97e22;
+    --text:      #c9d1e0;
+    --text-dim:  #5a6580;
+    --text-head: #edf0f7;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Bitter', Georgia, serif;
+    --max-w:     720px;
+    --radius:    6px;
+}
+
+/* ── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Base ───────────────────────────────────────────────── */
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.75;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+header {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+}
+
+header nav {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+header nav::before {
+    content: '~/blog';
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-right: auto;
+}
+
+header nav a {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+}
+
+header nav a:hover { color: var(--accent); }
+
+/* ── Main ───────────────────────────────────────────────── */
+main {
+    flex: 1;
+    max-width: var(--max-w);
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+/* ── Footer ─────────────────────────────────────────────── */
+footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+/* ── Typography ─────────────────────────────────────────── */
+h1 {
+    font-family: var(--font-mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-head);
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+}
+
+h1::before {
+    content: '# ';
+    color: var(--accent);
+}
+
+h2 {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-head);
+    margin: 2rem 0 0.75rem;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover { text-decoration: underline; }
+
+/* ── Tag filter ─────────────────────────────────────────── */
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.tags a {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.2rem 0.65rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    text-transform: lowercase;
+}
+
+.tags a:hover,
+.tags a.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+}
+
+/* ── Post card ──────────────────────────────────────────── */
+article {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background: var(--bg-card);
+    transition: border-color 0.2s;
+}
+
+article:hover { border-color: var(--accent); }
+
+article h2 { margin: 0 0 0.4rem; font-size: 1rem; }
+
+article h2 a {
+    color: var(--text-head);
+    text-decoration: none;
+    font-family: var(--font-mono);
+}
+
+article h2 a:hover { color: var(--accent); }
+
+article p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+}
+
+.post-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.post-tags a {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.15rem 0.5rem;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.post-tags a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+/* ── Post detail ────────────────────────────────────────── */
+.back-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    display: inline-block;
+    margin-bottom: 2rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.back-link:hover { color: var(--accent); }
+
+.post-meta {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* ── Post content ───────────────────────────────────────── */
+.post-content { font-size: 1rem; }
+
+.post-content h2,
+.post-content h3 {
+    font-family: var(--font-mono);
+    color: var(--text-head);
+    margin: 2rem 0 0.75rem;
+}
+
+.post-content p { margin-bottom: 1.25rem; }
+
+.post-content code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.15em 0.4em;
+    color: var(--accent);
+}
+
+.post-content pre {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin-bottom: 1.25rem;
+}
+
+.post-content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.post-content ul,
+.post-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.post-content li { margin-bottom: 0.3rem; }
+
+.post-content blockquote {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 1.25rem;
+}
