@@ -1,8 +1,10 @@
 import os
+import time
 import yaml
 import markdown2
 from dataclasses import dataclass, field
 from datetime import date
+from app.config import settings
 
 POSTS_DIR = "content/posts"
 
@@ -15,7 +17,19 @@ class Post:
     content_html: str
     tags: list[str] = field(default_factory=list)
 
-def parse_post(filepath: str) -> Post:
+_cache: list[Post] = []
+_cache_ts: float = 0.0
+_CACHE_TTL = settings.cache_ttl
+
+def _is_cache_valid() -> bool:
+    return bool(_cache) and (time.time() - _cache_ts) < _CACHE_TTL
+
+def invalidate_cache() -> None:
+    global _cache, _cache_ts
+    _cache = []
+    _cache_ts = 0.0
+
+def _parse_post(filepath: str) -> Post:
     with open(filepath, "r", encoding="utf-8") as f:
         raw = f.read()
 
@@ -34,26 +48,27 @@ def parse_post(filepath: str) -> Post:
         content_html=content_html
     )
 
-def get_all_posts(tag: str | None = None) -> list[Post]:
+def _load_all_posts() -> list[Post]:
     posts = []
     for filename in os.listdir(POSTS_DIR):
         if filename.endswith(".md"):
             filepath = os.path.join(POSTS_DIR, filename)
-            posts.append(parse_post(filepath))
-
-    if tag:
-        posts = [p for p in posts if tag in p.tags]
-
+            posts.append(_parse_post(filepath))
     return sorted(posts, key=lambda p: p.date, reverse=True)
 
+def get_all_posts(tag: str | None = None) -> list[Post]:
+    global _cache, _cache_ts
+
+    if not _is_cache_valid():
+        _cache = _load_all_posts()
+        _cache_ts = time.time()
+
+    if tag:
+        return [p for p in _cache if tag in p.tags]
+    return _cache
+
 def get_post_by_slug(slug: str) -> Post | None:
-    for post in get_all_posts():
-        if post.slug == slug:
-            return post
-    return None
+    return next((p for p in get_all_posts() if p.slug == slug), None)
 
 def get_all_tags() -> list[str]:
-    tags = set()
-    for post in get_all_posts():
-        tags.update(post.tags)
-    return sorted(tags)
+    return sorted(set(tag for post in get_all_posts() for tag in post.tags))
