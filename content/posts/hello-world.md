@@ -3,6 +3,9 @@ title: Hello World
 date: 19.02.2026
 slug: hello-world
 summary: My first post on this blog
+tags:
+  - devops
+  - python
 ---
 
 ## Hello from GidMaster
