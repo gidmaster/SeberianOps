@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.templates import templates
 from app.services.posts import get_all_posts, get_post_by_slug, get_all_tags
+from app.database.engine import get_db
+from app.repositories.post_stat import PostStatRepository
 
 router = APIRouter()
 
@@ -14,11 +17,19 @@ async def index(request: Request, tag: str | None = None):
     )
 
 @router.get("/post/{slug}")
-async def post_detail(request: Request, slug: str):
+async def post_detail(
+    request: Request,
+    slug: str,
+    db: AsyncSession = Depends(get_db)
+):
     post = get_post_by_slug(slug)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+    
+    repo = PostStatRepository(db)
+    stat = await repo.increment_view(slug)
+
     return templates.TemplateResponse(
         "post.html",
-        {"request": request, "post": post}
+        {"request": request, "post": post, "view_count": stat.view_count}
     )

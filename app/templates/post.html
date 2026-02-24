@@ -5,7 +5,10 @@
 {% block content %}
 <a href="/" class="back-link">← cd ..</a>
 <h1>{{ post.title }}</h1>
-<div class="post-meta">{{ post.date }}</div>
+<div class="post-meta">
+    {{ post.date }}
+    <span class="view-count">· {{ view_count }} views</span>
+</div>
 <div class="post-content">
     {{ post.content_html | safe }}
 </div>

@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     site_url: str = "http://localhost:8000"
     site_description: str = "DevOps notes from Siberia"
     site_author: str = "GidMaster"
+    database_url: str = "sqlite+aiosqlite:///./blog.db"
 
     @property
     def cache_ttl(self) -> int:

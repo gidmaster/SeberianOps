@@ -1,11 +1,24 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 from app.config import settings
-from app.routers import admin, blog, feed
+from app.routers import blog, admin, feed
 from app.errors import http_exception_handler, server_error_handler
+from app.database.engine import engine
+from app.database.base import Base
+from app.database.models import post_stat  # noqa: F401 - registers model
 
-app = FastAPI(title=settings.app_title)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    # Shutdown
+    await engine.dispose()
+
+app = FastAPI(title=settings.app_title, lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
