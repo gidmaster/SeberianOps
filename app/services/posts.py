@@ -2,6 +2,7 @@ import os
 import time
 import yaml
 import markdown2
+from pygments.formatters import HtmlFormatter
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from app.config import settings
@@ -48,7 +49,15 @@ def _parse_post(filepath: str) -> Post:
     _, frontmatter, body = raw.split("---", 2)
 
     meta = yaml.safe_load(frontmatter)
-    content_html = markdown2.markdown(body)
+    content_html = markdown2.markdown(
+        body,
+        extras={
+            "fenced-code-blocks": {"cssclass": "highlight"},
+            "code-friendly": None,
+            "tables": None,
+            "strike": None,
+        }
+    )
 
     return Post(
         title=meta["title"],

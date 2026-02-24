@@ -304,3 +304,20 @@ article p {
     font-size: 0.85rem;
     margin-bottom: 2rem;
 }
+
+/* ── Syntax highlight override ──────────────────────────── */
+.highlight {
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+    overflow-x: auto;
+}
+
+.highlight pre {
+    background: transparent;
+    border: none;
+    padding: 1.25rem;
+    margin: 0;
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    line-height: 1.6;
+}
