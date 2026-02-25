@@ -9,6 +9,9 @@ class PostStat(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     slug: Mapped[str] = mapped_column(String(200), unique=True, nullable=False, index=True)
     view_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    first_viewed_at: Mapped[datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=True
+    )
     last_viewed_at: Mapped[datetime] = mapped_column(
         DateTime, default=func.now(), onupdate=func.now()
     )

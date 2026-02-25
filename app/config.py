@@ -17,6 +17,19 @@ class Settings(BaseSettings):
     def cache_ttl(self) -> int:
         return self.cache_ttl_dev if self.app_env == "development" else self.cache_ttl_prod
 
+    @property
+    def database_url_sync(self) -> str:
+        replacements = {
+            "sqlite+aiosqlite": "sqlite",
+            "postgresql+asyncpg": "postgresql+psycopg2",
+            "mysql+aiomysql": "mysql+pymysql",
+        }
+        url = self.database_url
+        for async_driver, sync_driver in replacements.items():
+            if url.startswith(async_driver):
+                return url.replace(async_driver, sync_driver, 1)
+        return url
+
     class Config:
         env_file = ".env"
 
