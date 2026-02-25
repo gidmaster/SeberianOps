@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.exceptions import HTTPException
 from app.config import settings
 from app.routers import blog, admin, feed
@@ -16,6 +18,9 @@ async def lifespan(app: FastAPI):
     await engine.dispose()
 
 app = FastAPI(title=settings.app_title, lifespan=lifespan)
+
+if settings.app_env == "production":
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.trusted_hosts)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 

@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     cache_ttl_prod: int = 3600
     admin_token: str = "changeme"
     site_url: str = "http://localhost:8000"
+    trusted_hosts: list[str] = ["*"]
     site_description: str = "DevOps notes from Siberia"
     site_author: str = "GidMaster"
     database_url: str = "sqlite+aiosqlite:///./blog.db"
