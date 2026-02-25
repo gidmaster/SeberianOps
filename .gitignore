@@ -15,6 +15,6 @@ __pycache__/
 
 # OS
 .DS_Store
-Thumbs.dbblog.db
-
+Thumbs.db
+# Local DB
 blog.db
