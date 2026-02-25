@@ -9,10 +9,14 @@ class Settings(BaseSettings):
     cache_ttl_prod: int = 3600
     admin_token: str = "changeme"
     site_url: str = "http://localhost:8000"
-    trusted_hosts: list[str] = ["*"]
+    trusted_hosts: str = "*"  # ← str, not list[str]
     site_description: str = "DevOps notes from Siberia"
     site_author: str = "GidMaster"
     database_url: str = "sqlite+aiosqlite:///./blog.db"
+
+    @property
+    def trusted_hosts_list(self) -> list[str]:
+        return [h.strip() for h in self.trusted_hosts.split(",")]
 
     @property
     def cache_ttl(self) -> int:
