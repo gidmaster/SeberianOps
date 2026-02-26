@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import Response
-from datetime import datetime
+from datetime import datetime, timezone
 from app.services.posts import get_all_posts
 from app.config import settings
 
@@ -36,7 +36,7 @@ def _build_rss(request: Request) -> str:
         <description>{settings.site_description}</description>
         <language>en-us</language>
         <managingEditor>{settings.site_author}</managingEditor>
-        <lastBuildDate>{datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S+0000")}</lastBuildDate>
+        <lastBuildDate>{datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S+0000")}</lastBuildDate>
         {items}
     </channel>
 </rss>"""

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 from contextlib import asynccontextmanager
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.config import settings
 from app.routers import blog, feed, live
 from app.routers import admin_panel
@@ -21,7 +22,10 @@ app = FastAPI(title=settings.app_title, lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-app.add_exception_handler(HTTPException, http_exception_handler)
+# app.add_exception_handler(HTTPException, http_exception_handler)
+# app.add_exception_handler(Exception, server_error_handler)
+
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(Exception, server_error_handler)
 
 app.include_router(blog.router)

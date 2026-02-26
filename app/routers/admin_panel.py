@@ -24,6 +24,7 @@ async def login_page(request: Request):
     if token and verify_session(token):
         return RedirectResponse(url="/admin", status_code=303)
     return templates.TemplateResponse(
+        request,
         "admin/login.html",
         {"request": request, "error": None}
     )
@@ -35,6 +36,7 @@ async def login(
 ):
     if password != settings.admin_token:
         return templates.TemplateResponse(
+            request,
             "admin/login.html",
             {"request": request, "error": "Invalid password"},
             status_code=401
@@ -77,6 +79,7 @@ async def dashboard(
     ]
 
     return templates.TemplateResponse(
+        request,
         "admin/dashboard.html",
         {
             "request": request,
@@ -108,6 +111,7 @@ async def live_manage(
     ]
 
     return templates.TemplateResponse(
+        request,
         "admin/live.html",
         {
             "request": request,

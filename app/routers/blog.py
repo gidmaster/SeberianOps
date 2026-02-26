@@ -13,6 +13,7 @@ async def index(request: Request, tag: str | None = None):
     posts = get_all_posts(tag=tag)
     tags = get_all_tags()
     return templates.TemplateResponse(
+        request,
         "index.html",
         {"request": request, "posts": posts, "tags": tags, "active_tag": tag}
     )
@@ -31,6 +32,7 @@ async def post_detail(
     stat = await repo.increment_view(slug)
 
     return templates.TemplateResponse(
+        request,
         "post.html",
         {"request": request, "post": post, "view_count": stat.view_count}
     )
@@ -41,6 +43,7 @@ async def about(request: Request):
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return templates.TemplateResponse(
+        request,
         "page.html",
         {"request": request, "page": page}
     )
@@ -51,6 +54,7 @@ async def static_page(request: Request, slug: str):
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return templates.TemplateResponse(
+        request,
         "page.html",
         {"request": request, "page": page}
     )

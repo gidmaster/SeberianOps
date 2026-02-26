@@ -33,6 +33,7 @@ async def live_index(
     ]
 
     return templates.TemplateResponse(
+        request,
         "live.html",
         {
             "request": request,

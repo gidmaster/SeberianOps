@@ -1,6 +1,8 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
     app_env: str = "development"
     app_title: str = "SiberianOps"
     app_host: str = "0.0.0.0"
@@ -36,7 +38,7 @@ class Settings(BaseSettings):
                 return url.replace(async_driver, sync_driver, 1)
         return url
 
-    class Config:
-        env_file = ".env"
+    # class Config:
+    #     env_file = ".env"
 
 settings = Settings()
