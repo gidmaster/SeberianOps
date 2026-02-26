@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.templates import templates
+from app.services.pages import get_page
 from app.services.posts import get_all_posts, get_post_by_slug, get_all_tags
 from app.database.engine import get_db
 from app.repositories.post_stat import PostStatRepository
@@ -32,4 +33,24 @@ async def post_detail(
     return templates.TemplateResponse(
         "post.html",
         {"request": request, "post": post, "view_count": stat.view_count}
+    )
+
+@router.get("/about")
+async def about(request: Request):
+    page = get_page("about")
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return templates.TemplateResponse(
+        "page.html",
+        {"request": request, "page": page}
+    )
+
+@router.get("/page/{slug}")
+async def static_page(request: Request, slug: str):
+    page = get_page(slug)
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return templates.TemplateResponse(
+        "page.html",
+        {"request": request, "page": page}
     )
