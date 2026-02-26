@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Live — {{ app_title }}{% endblock %}
+
+{% block content %}
+<h1>Live</h1>
+
+{% if request.query_params.get('admin') == '1' %}
+<form method="post" action="/live/entry" class="live-form">
+    <textarea name="body" placeholder="What's happening... (markdown supported)" rows="4"></textarea>
+    <div class="live-form-footer">
+        <label class="pin-label">
+            <input type="checkbox" name="pinned" value="true"> Pin this entry
+        </label>
+        <input type="password" name="x_admin_token" placeholder="Admin token">
+        <button type="submit">Post</button>
+    </div>
+</form>
+{% endif %}
+
+<div class="live-feed">
+{% for entry in entries %}
+<div class="live-entry {% if entry.pinned %}pinned{% endif %}">
+    <div class="live-entry-meta">
+        {% if entry.pinned %}<span class="pin-badge">📌 pinned</span>{% endif %}
+        <span class="live-entry-date">{{ entry.created_at.strftime("%d %b %Y, %H:%M") }}</span>
+    </div>
+    <div class="live-entry-body post-content">
+        {{ entry.body_html | safe }}
+    </div>
+
+    {% if request.query_params.get('admin') == '1' %}
+    <div class="live-entry-actions">
+        <form method="post" action="/live/entry/{{ entry.id }}/pin" style="display:inline">
+            <input type="hidden" name="x_admin_token"
+                   value="{{ request.query_params.get('admin_token', '') }}">
+            <button type="submit" class="action-btn">
+                {% if entry.pinned %}unpin{% else %}pin{% endif %}
+            </button>
+        </form>
+        <form method="post" action="/live/entry/{{ entry.id }}/delete" style="display:inline">
+            <input type="hidden" name="x_admin_token"
+                   value="{{ request.query_params.get('admin_token', '') }}">
+            <button type="submit" class="action-btn danger">delete</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+</div>
+
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="/live?page={{ page - 1 }}">← newer</a>
+    {% endif %}
+    <span>{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="/live?page={{ page + 1 }}">older →</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
