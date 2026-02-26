@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     site_description: str = "DevOps notes from Siberia"
     site_author: str = "GidMaster"
     database_url: str = "sqlite+aiosqlite:///./blog.db"
+    secret_key: str = "change-this-to-a-random-secret"
 
     @property
     def trusted_hosts_list(self) -> list[str]:

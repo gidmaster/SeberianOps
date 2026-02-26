@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Dashboard</h1>
+    <div class="admin-nav">
+        <a href="/admin/live">Live entries</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</div>
+
+<section class="admin-section">
+    <h2>Post stats</h2>
+    {% if post_stats %}
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>Slug</th>
+                <th>Views</th>
+                <th>First viewed</th>
+                <th>Last viewed</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for stat in post_stats %}
+            <tr>
+                <td><a href="/post/{{ stat.slug }}">{{ stat.slug }}</a></td>
+                <td class="views-count">{{ stat.view_count }}</td>
+                <td>{{ stat.first_viewed_at.strftime("%d %b %Y") if stat.first_viewed_at else "—" }}</td>
+                <td>{{ stat.last_viewed_at.strftime("%d %b %Y, %H:%M") if stat.last_viewed_at else "—" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-note">No post views yet.</p>
+    {% endif %}
+</section>
+
+<section class="admin-section">
+    <h2>Recent live entries <span class="count-badge">{{ total_entries }} total</span></h2>
+    {% if recent_entries %}
+    <div class="live-feed">
+        {% for entry in recent_entries %}
+        <div class="live-entry {% if entry.pinned %}pinned{% endif %}">
+            <div class="live-entry-meta">
+                {% if entry.pinned %}<span class="pin-badge">📌 pinned</span>{% endif %}
+                <span class="live-entry-date">
+                    {{ entry.created_at.strftime("%d %b %Y, %H:%M") }}
+                </span>
+            </div>
+            <div class="live-entry-body post-content">
+                {{ entry.body_html | safe }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="/admin/live" class="see-all-link">Manage all entries →</a>
+    {% else %}
+    <p class="empty-note">No live entries yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

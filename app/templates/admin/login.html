@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login — {{ request.app.title }}{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+    <h1>Admin</h1>
+    {% if error %}
+    <div class="login-error">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="/admin/login" class="login-form">
+        <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            autofocus
+        >
+        <button type="submit">Login →</button>
+    </form>
+</div>
+{% endblock %}

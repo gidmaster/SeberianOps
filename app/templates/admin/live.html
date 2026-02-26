@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Live Entries — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Live entries</h1>
+    <div class="admin-nav">
+        <a href="/admin">← Dashboard</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</div>
+
+<form method="post" action="/admin/live/entry" class="live-form">
+    <textarea name="body" placeholder="What's happening... (markdown supported)" rows="4"></textarea>
+    <div class="live-form-footer">
+        <label class="pin-label">
+            <input type="checkbox" name="pinned" value="true"> Pin this entry
+        </label>
+        <button type="submit">Post</button>
+    </div>
+</form>
+
+<div class="live-feed">
+{% for entry in entries %}
+<div class="live-entry {% if entry.pinned %}pinned{% endif %}">
+    <div class="live-entry-meta">
+        {% if entry.pinned %}<span class="pin-badge">📌 pinned</span>{% endif %}
+        <span class="live-entry-date">
+            {{ entry.created_at.strftime("%d %b %Y, %H:%M") }}
+        </span>
+    </div>
+    <div class="live-entry-body post-content">
+        {{ entry.body_html | safe }}
+    </div>
+    <div class="live-entry-actions">
+        <form method="post" action="/admin/live/entry/{{ entry.id }}/pin">
+            <button type="submit" class="action-btn">
+                {% if entry.pinned %}unpin{% else %}pin{% endif %}
+            </button>
+        </form>
+        <form method="post" action="/admin/live/entry/{{ entry.id }}/delete">
+            <button type="submit" class="action-btn danger"
+                    onclick="return confirm('Delete this entry?')">
+                delete
+            </button>
+        </form>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="/admin/live?page={{ page - 1 }}">← newer</a>
+    {% endif %}
+    <span>{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="/admin/live?page={{ page + 1 }}">older →</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
