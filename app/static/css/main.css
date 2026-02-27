@@ -598,3 +598,12 @@ article p {
     font-family: var(--font-mono);
     font-size: 0.8rem;
 }
+
+/* ── Post images ────────────────────────────────────────── */
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin: 1.25rem 0;
+}

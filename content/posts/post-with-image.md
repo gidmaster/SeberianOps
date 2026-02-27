@@ -13,4 +13,4 @@ tags:
 
 ## image
 
-![img](face.jpg)
+![img](../images/face.jpg)

@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import yaml
 import markdown2
@@ -21,6 +22,23 @@ class Post:
 _cache: list[Post] = []
 _cache_ts: float = 0.0
 _CACHE_TTL = settings.cache_ttl
+
+def _rewrite_image_paths(html: str) -> str:
+    """
+    Rewrites relative image src to absolute /images/ paths.
+    <img src="face.jpg"> → <img src="/images/face.jpg">
+    <img src="./face.jpg"> → <img src="/images/face.jpg">
+    Leaves absolute paths (/images/..., http://...) untouched.
+    """
+    def replace(match):
+        src = match.group(1)
+        if src.startswith(("http://", "https://", "/", "data:")):
+            return match.group(0)  # already absolute, leave it
+        src = src.lstrip("./")
+        src = os.path.basename(src)
+        return f'src="/images/{src}"'
+
+    return re.sub(r'src="([^"]*)"', replace, html)
 
 def _is_cache_valid() -> bool:
     return bool(_cache) and (time.time() - _cache_ts) < _CACHE_TTL
@@ -56,8 +74,10 @@ def _parse_post(filepath: str) -> Post:
             "code-friendly": None,
             "tables": None,
             "strike": None,
+            "header-ids": None,
         }
     )
+    content_html = _rewrite_image_paths(content_html)
 
     return Post(
         title=meta["title"],

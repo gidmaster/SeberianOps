@@ -21,6 +21,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title=settings.app_title, lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/images", StaticFiles(directory="content/images"), name="images")
 
 # app.add_exception_handler(HTTPException, http_exception_handler)
 # app.add_exception_handler(Exception, server_error_handler)
