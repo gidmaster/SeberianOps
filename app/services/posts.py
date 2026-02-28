@@ -1,3 +1,4 @@
+import math
 import os
 import re
 import time
@@ -18,6 +19,7 @@ class Post:
     summary: str
     content_html: str
     tags: list[str] = field(default_factory=list)
+    reading_time: int = 0
 
 _cache: list[Post] = []
 _cache_ts: float = 0.0
@@ -85,7 +87,8 @@ def _parse_post(filepath: str) -> Post:
         slug=meta["slug"],
         summary=meta.get("summary", ""),
         tags=meta.get("tags", []),
-        content_html=content_html
+        content_html=content_html,
+        reading_time=reading_time(content_html)
     )
 
 def _load_all_posts() -> list[Post]:
@@ -95,6 +98,12 @@ def _load_all_posts() -> list[Post]:
             filepath = os.path.join(POSTS_DIR, filename)
             posts.append(_parse_post(filepath))
     return sorted(posts, key=lambda p: p.date, reverse=True)
+
+def reading_time(content_html: str) -> int:
+    # Strip HTML tags, count words, divide by 200 wpm
+    text = re.sub(r'<[^>]+>', '', content_html)
+    words = len(text.split())
+    return max(1, math.ceil(words / 200))
 
 def get_all_posts(tag: str | None = None) -> list[Post]:
     global _cache, _cache_ts
