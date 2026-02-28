@@ -1,5 +1,7 @@
 FROM python:3.12-slim
 
+LABEL org.opencontainers.image.source=https://github.com/gidmaster/SeberianOps
+
 WORKDIR /app
 
 # Install dependencies first (better layer caching)
