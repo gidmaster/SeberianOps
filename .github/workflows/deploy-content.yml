@@ -28,6 +28,5 @@ jobs:
       - name: Invalidate cache
         run: |
           ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            curl -s -X POST http://localhost:8000/admin/cache/invalidate \
-              -H 'X-Admin-Token: ${{ secrets.ADMIN_TOKEN }}'
+            curl -s -X POST ${{ secrets.SITE_URL }}/admin/cache/invalidate -H 'X-Admin-Token: ${{ secrets.ADMIN_TOKEN }}'
           "
