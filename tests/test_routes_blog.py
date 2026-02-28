@@ -134,7 +134,7 @@ async def test_post_renders_markdown(client: AsyncClient, test_posts_dir):
     response = await client.get("/post/test-post")
     assert response.status_code == 200
     assert "<code>" in response.text  # inline code rendered
-    assert "<h2>" in response.text    # heading rendered
+    assert "<h2" in response.text    # heading rendered
 
 # ── RSS feed tests ────────────────────────────────────────
 
