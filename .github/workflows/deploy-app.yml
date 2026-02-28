@@ -1,0 +1,121 @@
+name: Deploy App
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'requirements.txt'
+      - 'docker/**'
+      - 'alembic/**'
+      - 'alembic.ini'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest tests/ -v
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create .env on server
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat > /opt/web/SeberianOps/.env << 'EOF'
+          APP_ENV=production
+          APP_TITLE=SiberianOps
+          APP_HOST=0.0.0.0
+          APP_PORT=8000
+          CACHE_TTL_DEV=10
+          CACHE_TTL_PROD=3600
+          ADMIN_TOKEN=${{ secrets.ADMIN_TOKEN }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          SITE_URL=${{ secrets.SITE_URL }}
+          SITE_DESCRIPTION=DevOps notes from Siberia
+          SITE_AUTHOR=GidMaster
+          TRUSTED_HOSTS=siberianops.gidmaster.dev,www.siberianops.gidmaster.dev
+          EOF"
+
+      - name: Pull latest code
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd /opt/web/SeberianOps &&
+            git pull origin main
+          "
+
+      - name: Pull new image
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd /opt/web/SeberianOps &&
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io \
+              -u gidmaster --password-stdin &&
+            docker compose -f docker-compose.prod.yml pull app
+          "
+
+      - name: Run migrations
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd /opt/web/SeberianOps &&
+            docker compose -f docker-compose.prod.yml run --rm app \
+              alembic upgrade head
+          "
+
+      - name: Restart services
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd /opt/web/SeberianOps &&
+            docker compose -f docker-compose.prod.yml up -d
+          "
+
+      - name: Invalidate cache
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            curl -s -X POST http://localhost:8000/admin/cache/invalidate \
+              -H 'X-Admin-Token: ${{ secrets.ADMIN_TOKEN }}'
+          "

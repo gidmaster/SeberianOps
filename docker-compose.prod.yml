@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY:-gidmaster/seberianops}:latest
     volumes:
       - ./content:/app/content
       - ./data:/app/data
