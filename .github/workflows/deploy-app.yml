@@ -95,8 +95,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             cd /opt/web/SeberianOps &&
-            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io \
-              -u gidmaster --password-stdin &&
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u gidmaster --password-stdin &&
             docker compose -f docker-compose.prod.yml pull app
           "
 
