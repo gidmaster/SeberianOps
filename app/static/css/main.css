@@ -607,3 +607,10 @@ article p {
     border: 1px solid var(--border);
     margin: 1.25rem 0;
 }
+
+/* ── Math (KaTeX) ───────────────────────────────────────── */
+.post-content .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0;
+}
