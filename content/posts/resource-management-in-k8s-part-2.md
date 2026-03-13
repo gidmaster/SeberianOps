@@ -3,6 +3,9 @@ title: Resource Management for Pods and Containers — Limits
 date: 13.03.2026
 slug: limits-k8s
 summary: A deep dive into resource.limits — why they are invisible to the scheduler, how they become hard kernel ceilings on the node, and what actually happens when a container hits them.
+series: k8s-resource-management
+series_title: "Kubernetes Resource Management"
+series_part: 2
 tags:
   - devops
   - kubernetes

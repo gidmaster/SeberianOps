@@ -1,8 +1,11 @@
 ---
-title: Resource Management for Pods and Containers
+title: Resource Management for Pods and Containers — Requests
 date: 28.02.2026
 slug: limit-request-k8s
 summary: A deep dive into resource.requests — how the scheduler uses it to place pods, and how it becomes kernel primitives on the node via cgroups and OOM scoring.
+series: k8s-resource-management
+series_title: "Kubernetes Resource Management"
+series_part: 1
 tags:
   - devops
   - kubernetes
