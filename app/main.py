@@ -4,7 +4,7 @@ from fastapi.exceptions import HTTPException
 from contextlib import asynccontextmanager
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.config import settings
-from app.routers import blog, feed, live
+from app.routers import blog, feed, live, seo
 from app.routers import admin_panel
 from app.errors import http_exception_handler, server_error_handler
 from app.database.engine import engine
@@ -33,3 +33,4 @@ app.include_router(blog.router)
 app.include_router(live.router)
 app.include_router(admin_panel.router)
 app.include_router(feed.router)
+app.include_router(seo.router)
