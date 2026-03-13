@@ -20,26 +20,22 @@ class Post:
     content_html: str
     tags: list[str] = field(default_factory=list)
     reading_time: int = 0
+    series: str | None = None
+    series_title: str | None = None
+    series_part: int | None = None
 
 _cache: list[Post] = []
 _cache_ts: float = 0.0
 _CACHE_TTL = settings.cache_ttl
 
 def _rewrite_image_paths(html: str) -> str:
-    """
-    Rewrites relative image src to absolute /images/ paths.
-    <img src="face.jpg"> → <img src="/images/face.jpg">
-    <img src="./face.jpg"> → <img src="/images/face.jpg">
-    Leaves absolute paths (/images/..., http://...) untouched.
-    """
     def replace(match):
         src = match.group(1)
         if src.startswith(("http://", "https://", "/", "data:")):
-            return match.group(0)  # already absolute, leave it
+            return match.group(0)
         src = src.lstrip("./")
         src = os.path.basename(src)
         return f'src="/images/{src}"'
-
     return re.sub(r'src="([^"]*)"', replace, html)
 
 def _is_cache_valid() -> bool:
@@ -65,7 +61,6 @@ def _parse_post(filepath: str) -> Post:
     with open(filepath, "r", encoding="utf-8") as f:
         raw = f.read()
 
-    # Split frontmatter and content
     _, frontmatter, body = raw.split("---", 2)
 
     meta = yaml.safe_load(frontmatter)
@@ -88,7 +83,10 @@ def _parse_post(filepath: str) -> Post:
         summary=meta.get("summary", ""),
         tags=meta.get("tags", []),
         content_html=content_html,
-        reading_time=reading_time(content_html)
+        reading_time=reading_time(content_html),
+        series=meta.get("series"),
+        series_title=meta.get("series_title"),
+        series_part=meta.get("series_part"),
     )
 
 def _load_all_posts() -> list[Post]:
@@ -100,7 +98,6 @@ def _load_all_posts() -> list[Post]:
     return sorted(posts, key=lambda p: p.date, reverse=True)
 
 def reading_time(content_html: str) -> int:
-    # Strip HTML tags, count words, divide by 200 wpm
     text = re.sub(r'<[^>]+>', '', content_html)
     words = len(text.split())
     return max(1, math.ceil(words / 200))
@@ -121,3 +118,8 @@ def get_post_by_slug(slug: str) -> Post | None:
 
 def get_all_tags() -> list[str]:
     return sorted(set(tag for post in get_all_posts() for tag in post.tags))
+
+def get_series_posts(series: str) -> list[Post]:
+    """Return all posts in a series, sorted by part number."""
+    posts = [p for p in get_all_posts() if p.series == series]
+    return sorted(posts, key=lambda p: p.series_part or 0)

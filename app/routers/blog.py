@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.templates import templates
 from app.services.pages import get_page
-from app.services.posts import get_all_posts, get_post_by_slug, get_all_tags
+from app.services.posts import get_all_posts, get_post_by_slug, get_all_tags, get_series_posts
 from app.database.engine import get_db
 from app.repositories.post_stat import PostStatRepository
 
@@ -27,14 +27,22 @@ async def post_detail(
     post = get_post_by_slug(slug)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    
+
     repo = PostStatRepository(db)
     stat = await repo.increment_view(slug)
+
+    # Fetch sibling posts only when the post belongs to a series
+    series_posts = get_series_posts(post.series) if post.series else []
 
     return templates.TemplateResponse(
         request,
         "post.html",
-        {"request": request, "post": post, "view_count": stat.view_count}
+        {
+            "request": request,
+            "post": post,
+            "view_count": stat.view_count,
+            "series_posts": series_posts,
+        }
     )
 
 @router.get("/about")

@@ -10,7 +10,56 @@
     · {{ post.reading_time }} min read
     <span class="view-count">· {{ view_count }} views</span>
 </div>
+
+{% if series_posts %}
+<div class="series-box">
+    <div class="series-label">Series — {{ post.series_title }}</div>
+    <ol class="series-list">
+        {% for part in series_posts %}
+        <li class="series-item {% if part.slug == post.slug %}series-current{% endif %}">
+            {% if part.slug == post.slug %}
+                <span class="series-item-title">{{ part.title }}</span>
+            {% else %}
+                <a href="/post/{{ part.slug }}">{{ part.title }}</a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+{% endif %}
+
 <div class="post-content">
     {{ post.content_html | safe }}
 </div>
+
+{% if series_posts %}
+<div class="series-nav">
+    {% set ns = namespace(prev=none, next=none) %}
+    {% for part in series_posts %}
+        {% if part.slug == post.slug %}
+            {% if loop.index0 > 0 %}
+                {% set ns.prev = series_posts[loop.index0 - 1] %}
+            {% endif %}
+            {% if not loop.last %}
+                {% set ns.next = series_posts[loop.index0 + 1] %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if ns.prev %}
+    <a href="/post/{{ ns.prev.slug }}" class="series-nav-link series-nav-prev">
+        <span class="series-nav-dir">← previous</span>
+        <span class="series-nav-title">{{ ns.prev.title }}</span>
+    </a>
+    {% else %}
+    <span></span>
+    {% endif %}
+    {% if ns.next %}
+    <a href="/post/{{ ns.next.slug }}" class="series-nav-link series-nav-next">
+        <span class="series-nav-dir">next →</span>
+        <span class="series-nav-title">{{ ns.next.title }}</span>
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
 {% endblock %}
