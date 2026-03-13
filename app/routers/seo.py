@@ -17,6 +17,11 @@ Sitemap: {settings.site_url}/sitemap.xml
 """
     return Response(content=content, media_type="text/plain")
 
+@router.get("/googlef609e9499d6b1081.html", include_in_schema=False)
+async def google_verification():
+    content = f"google-site-verification: googlef609e9499d6b1081.html"
+    return Response(content=content, media_type="text/plain")
+
 
 @router.get("/sitemap.xml", include_in_schema=False)
 async def sitemap():
