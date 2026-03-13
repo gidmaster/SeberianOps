@@ -2,7 +2,7 @@
 title: Resource Management for Pods and Containers
 date: 28.02.2026
 slug: limit-request-k8s
-summary: A study note about limit and request usage in k8s
+summary: A deep dive into resource.requests — how the scheduler uses it to place pods, and how it becomes kernel primitives on the node via cgroups and OOM scoring.
 tags:
   - devops
   - kubernetes
@@ -35,7 +35,7 @@ That word *guarantees* deserves unpacking. It has two distinct meanings dependin
 - **At the scheduler level** — `requests` is the value the scheduler uses to decide *where* the pod can run and *which* node is the best fit.
 - **At the node level** — `requests` is translated into OS-level primitives that actually enforce the guarantee at runtime.
 
-We'll cover the node level in a follow-up. For now, let's trace exactly what the scheduler does with a `requests` value.
+Both levels are covered in this article — the scheduler first, then the full chain from kubelet admission through to kernel enforcement.
 
 ## How the Scheduler Uses `requests`
 
