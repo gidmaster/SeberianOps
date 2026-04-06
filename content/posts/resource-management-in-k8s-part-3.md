@@ -195,7 +195,7 @@ The value for `Burstable` pods is not fixed. It is calculated per-pod based
 on the pod's memory request relative to total node memory:
 
 $$
-\text{oom\_score\_adj} = \min\left( \max\left( 2,\ 1000 - \frac{1000 \cdot \text{memoryRequestBytes}}{\text{machineMemoryCapacityBytes}} \right),\ 999 \right)
+\text{oom score adj} = \min\left( \max\left( 2,\ 1000 - \frac{1000 \cdot \text{memoryRequestBytes}}{\text{machineMemoryCapacityBytes}} \right),\ 999 \right)
 $$
 
 The fraction `(1000 × memoryRequestBytes) / machineMemoryCapacityBytes` is
