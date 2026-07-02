@@ -32,3 +32,4 @@ Source code will be on [GitHub](https://github.com/gidmaster/SeberianOps) eventu
 ## Barcelona
 
 My cat. Named after football club. But we usually call him Barsik. Unimpressed by uptime guarantees.
+![Barselona with love](../images/barselona.jpg)
